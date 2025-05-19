@@ -1,0 +1,168 @@
+.App {
+  text-align: center;
+}
+
+.youtube-player-container {
+  position: relative; /* Needed for absolute positioning of iframe */
+  /* Removed fixed width and height */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden; /* Ensures controls stay within bounds */
+  display: flex;
+  flex-direction: column;
+}
+
+.youtube-player-container.fullscreen-active {
+  z-index: 9999;
+}
+
+.youtube-player-container.fullscreen-active .youtube-iframe {
+ 
+}
+iframe {
+  
+ 
+  width: 98vw;
+  height: 88vh;
+  object-fit: fill;
+
+}
+
+
+/* Ensure body and html have no margin/padding and hide overflow in fullscreen */
+body.fullscreen-active,
+html.fullscreen-active {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.youtube-iframe {
+  width: 100%;
+  height: 100%;
+}
+
+/* Styles for the click-blocking overlay */
+.click-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10001; /* Ensure it's above the video */
+  background-color: transparent; /* Make it invisible */
+  cursor: default; /* Change cursor to default */
+}
+
+.custom-controls {
+  display: flex;
+  justify-content: center; /* Center controls */
+  align-items: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-top: 1px solid #ccc;
+  z-index: 10002; /* Ensure controls are above the overlay */
+  gap: 10px; /* Add space between flex items */
+}
+
+.custom-controls button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 50%; /* Make buttons rounded */
+  background-color: black; /* Change background to black */
+  color: white; /* Ensure text is visible */
+  cursor: pointer;
+  font-size: 14px;
+  width: 40px; /* Add width and height to make the circle */
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-controls button:hover {
+  background-color: lightgrey;
+  
+}
+
+.progress-bar-container {
+  flex-grow: 1;
+  height: 10px;
+  background-color: #e0e0e0;
+  /* Removed margin: 0 10px; */
+  cursor: pointer;
+  border-radius: 5px;
+  overflow: hidden; /* For rounded corners on filled bar */
+}
+
+.progress-bar-filled {
+  height: 100%;
+  background-color: red;
+  width: 0%; /* Initial width */
+  transition: width 0.1s linear; /* Smooth progress update */
+}
+
+.devtools-message-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  background-color: #f8d7da; /* Light red for warning */
+  color: #721c24; /* Dark red text */
+  padding: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+}
+
+.devtools-message-container h2 {
+  color: #721c24;
+  margin-bottom: 10px;
+}
+
+.devtools-message-container p {
+  font-size: 1.2em;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.video-item {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.video-item:hover {
+  transform: scale(1.05);
+}
+
+.video-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.video-item div {
+  padding: 10px;
+}
+
+.video-item h3 {
+  margin-top: 0;
+  font-size: 1.1em;
+}
+
+.custom-controls.live-stream-controls {
+  justify-content: flex-end; /* Align items to the right */
+}
+
+.custom-controls.live-stream-controls button {
+  margin-left: 0; /* Remove default margin */
+}
