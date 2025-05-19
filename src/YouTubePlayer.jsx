@@ -15,6 +15,8 @@ const YouTubePlayer = () => {
   const [duration, setDuration] = useState(0); // Add state for duration
   const [showOverlay, setShowOverlay] = useState(false); // Add state for click-blocking overlay
   const [showEndScreen, setShowEndScreen] = useState(false); // Add state for end screen
+  const [volume, setVolume] = useState(100); // Add state for volume (0-100)
+  const [isMuted, setIsMuted] = useState(false); // Add state for mute status
   const playerRef = useRef(null);
   const containerRef = useRef(null); // Add a ref for the container
   const hideButtonTimerRef = useRef(null); // Add a ref for the timer
@@ -122,7 +124,7 @@ const YouTubePlayer = () => {
       iframe.addEventListener('fullscreenchange', handleFullscreenChange);
       iframe.addEventListener('webkitfullscreenchange', handleFullscreenChange);
       iframe.addEventListener('mozfullscreenchange', handleFullscreenChange);
-      iframe.addEventListener('msfullscreenchange', handleFullscreenChange);
+      iframe.addEventListener('msFullscreenChange', handleFullscreenChange);
     }
     // Set initial duration when player is ready
     const videoDuration = playerRef.current.getDuration();
@@ -130,6 +132,11 @@ const YouTubePlayer = () => {
     // Check if it's a live stream (duration is 0)
     if (videoDuration === 0) {
       setIsLiveStream(true);
+    }
+    // Get initial volume and mute status
+    if (playerRef.current) {
+      setVolume(playerRef.current.getVolume());
+      setIsMuted(playerRef.current.isMuted());
     }
   };
 
@@ -256,6 +263,38 @@ const YouTubePlayer = () => {
     playerRef.current.seekTo(seekTime, true);
   };
 
+  // Handle volume change
+  const handleVolumeChange = (event) => {
+    const newVolume = parseInt(event.target.value, 10);
+    setVolume(newVolume);
+    if (playerRef.current) {
+      playerRef.current.setVolume(newVolume);
+      // If volume is changed, ensure it's not muted unless volume is 0
+      if (newVolume > 0 && isMuted) {
+        setIsMuted(false);
+        playerRef.current.unMute();
+      }
+    }
+  };
+
+  // Handle mute toggle
+  const toggleMute = () => {
+    if (playerRef.current) {
+      if (isMuted) {
+        playerRef.current.unMute();
+        setIsMuted(false);
+        // Restore volume to previous level if it was muted at 0
+        if (volume === 0) {
+           setVolume(50); // Restore to a default level like 50
+           playerRef.current.setVolume(50);
+        }
+      } else {
+        playerRef.current.mute();
+        setIsMuted(true);
+      }
+    }
+  };
+
   // Format time in HH:MM:SS or MM:SS format
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds) || timeInSeconds < 0) return '00:00';
@@ -344,6 +383,21 @@ const YouTubePlayer = () => {
               {!isLiveStream && (
                 <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
               )}
+              {/* Volume Control */}
+              <div className="volume-control">
+                <button onClick={toggleMute}>
+                  {isMuted || volume === 0 ? '🔇' : '🔊'}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={volume}
+                  onChange={handleVolumeChange}
+                  className="volume-slider"
+                  disabled={isLiveStream} // Disable slider for live streams
+                />
+              </div>
               {/* Fullscreen button */}
               <button onClick={toggleFullScreen}>
                 {'⤢'}
