@@ -4,29 +4,29 @@ import disableDevtool from 'disable-devtool';
 import { useParams } from 'react-router-dom'; // Import useParams
 
 const YouTubePlayer = () => {
-  const { videoId } = useParams(); // Get videoId from route parameters
+  const { videoId } = useParams(); 
   const [isPlaying, setIsPlaying] = useState(false);
   const [showDevToolsMessage, setShowDevToolsMessage] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false); // Add state for full screen
-  const [showExitButton, setShowExitButton] = useState(false); // Add state for exit button visibility
-  const [showControls, setShowControls] = useState(true); // Add state for control visibility
-  const [currentTime, setCurrentTime] = useState(0); // Add state for current time
-  const [isLiveStream, setIsLiveStream] = useState(false); // Add state for live stream
-  const [duration, setDuration] = useState(0); // Add state for duration
-  const [showOverlay, setShowOverlay] = useState(false); // Add state for click-blocking overlay
-  const [showEndScreen, setShowEndScreen] = useState(false); // Add state for end screen
-  const [volume, setVolume] = useState(100); // Add state for volume (0-100)
-  const [isMuted, setIsMuted] = useState(false); // Add state for mute status
+  const [isFullScreen, setIsFullScreen] = useState(false); 
+  const [showExitButton, setShowExitButton] = useState(false); 
+  const [showControls, setShowControls] = useState(true); 
+  const [currentTime, setCurrentTime] = useState(0); 
+  const [isLiveStream, setIsLiveStream] = useState(false); 
+  const [duration, setDuration] = useState(0); 
+  const [showOverlay, setShowOverlay] = useState(false); 
+  const [showEndScreen, setShowEndScreen] = useState(false); 
+  const [volume, setVolume] = useState(100); 
+  const [isMuted, setIsMuted] = useState(false); 
   const playerRef = useRef(null);
-  const containerRef = useRef(null); // Add a ref for the container
-  const hideButtonTimerRef = useRef(null); // Add a ref for the timer
+  const containerRef = useRef(null);
+  const hideButtonTimerRef = useRef(null); 
 
   useEffect(() => {
-    // Attempt to disable dev tools
+    
     disableDevtool({
       ondevtoolopen: () => {
         setShowDevToolsMessage(true);
-        // Optionally, pause the video or take other actions
+        
         if (playerRef.current) {
           playerRef.current.internalPlayer.pauseVideo();
           setIsPlaying(false);
@@ -52,88 +52,88 @@ const YouTubePlayer = () => {
     };
   }, []);
 
-  // Effect for handling mouse movement, control visibility, and exit button visibility
+  
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleMouseMove = () => {
-      // Show controls on mouse move
+      
       setShowControls(true);
       if (isFullScreen) {
-        setShowExitButton(true); // Also show exit button in fullscreen
+        setShowExitButton(true); 
       }
-      // Clear previous timer
+      
       if (hideButtonTimerRef.current) {
         clearTimeout(hideButtonTimerRef.current);
         console.log('Cleared previous hide timer.');
       }
-      // Set a new timer to hide controls after 3 seconds of inactivity
+     
       hideButtonTimerRef.current = setTimeout(() => {
         console.log('Timer finished. Hiding controls.');
         setShowControls(false);
         if (isFullScreen) {
-           setShowExitButton(false); // Also hide exit button in fullscreen
+           setShowExitButton(false); 
         }
       }, 3000);
     };
 
-    // Add mousemove listener
+    
     console.log('Adding mousemove listener.');
     container.addEventListener('mousemove', handleMouseMove);
 
-    // For live streams, ensure controls are initially visible but the timer will hide them
+    
     if (isLiveStream) {
       setShowControls(true);
-      setShowExitButton(false); // Hide exit button for live streams
+      setShowExitButton(false); 
     }
 
     if (isFullScreen) {
-      // Add the fullscreen-active class
+      
       container.classList.add('fullscreen-active');
     } else {
-      setShowExitButton(false); // Hide button when not in fullscreen
-      // Remove the fullscreen-active class
+      setShowExitButton(false); 
+      
       container.classList.remove('fullscreen-active');
     }
 
     return () => {
-      // Clean up listeners on component unmount or isFullScreen/isLiveStream change
+      
       if (container) {
         console.log('Cleaning up mousemove listener.');
         container.removeEventListener('mousemove', handleMouseMove);
       }
-      // Clear timer on cleanup
+      
       if (hideButtonTimerRef.current) {
         console.log('Cleaning up hide timer.');
         clearTimeout(hideButtonTimerRef.current);
       }
     };
-  }, [isFullScreen, isLiveStream]); // Re-run effect when isFullScreen or isLiveStream changes
+  }, [isFullScreen, isLiveStream]); 
 
   const onPlayerReady = (event) => {
     playerRef.current = event.target;
-    // Block right-click on the YouTube iframe itself
+    
     const iframe = event.target.getIframe();
     if (iframe) {
       iframe.addEventListener('contextmenu', (e) => {
         e.preventDefault();
       });
 
-      // Add fullscreen change listeners
+      
       iframe.addEventListener('fullscreenchange', handleFullscreenChange);
       iframe.addEventListener('webkitfullscreenchange', handleFullscreenChange);
       iframe.addEventListener('mozfullscreenchange', handleFullscreenChange);
       iframe.addEventListener('msFullscreenChange', handleFullscreenChange);
     }
-    // Set initial duration when player is ready
+    
     const videoDuration = playerRef.current.getDuration();
     setDuration(videoDuration);
-    // Check if it's a live stream (duration is 0)
+    
     if (videoDuration === 0) {
       setIsLiveStream(true);
     }
-    // Get initial volume and mute status
+    
     if (playerRef.current) {
       setVolume(playerRef.current.getVolume());
       setIsMuted(playerRef.current.isMuted());
@@ -141,53 +141,49 @@ const YouTubePlayer = () => {
   };
 
   const handleFullscreenChange = () => {
-    // Check if the document is currently in fullscreen mode
     const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
     const isCurrentlyFullScreen = !!fullscreenElement;
     console.log('Fullscreen change detected. isCurrentlyFullScreen:', isCurrentlyFullScreen);
     setIsFullScreen(isCurrentlyFullScreen);
     console.log('Updated isFullScreen state:', isCurrentlyFullScreen);
 
-    // Add/remove fullscreen-active class to body
     if (isCurrentlyFullScreen) {
       document.body.classList.add('fullscreen-active');
-      document.documentElement.classList.add('fullscreen-active'); // Also add to html
+      document.documentElement.classList.add('fullscreen-active'); 
     } else {
       document.body.classList.remove('fullscreen-active');
-      document.documentElement.classList.remove('fullscreen-active'); // Also remove from html
+      document.documentElement.classList.remove('fullscreen-active'); 
     }
   };
 
   const onPlayerStateChange = (event) => {
     if (event.data === YouTube.PlayerState.PLAYING) {
       setIsPlaying(true);
-      setShowEndScreen(false); // Hide end screen when playing
-      setShowOverlay(true); // Always show overlay when playing
-      // Hide controls when playing, unless it's a live stream
+      setShowEndScreen(false); 
+      setShowOverlay(true); 
       if (!isLiveStream) {
         setShowControls(false);
       }
     } else if (event.data === YouTube.PlayerState.PAUSED) {
       setIsPlaying(false);
-      // Show controls when paused
       setShowControls(true);
-      setShowOverlay(false); // Hide overlay when paused
+      setShowOverlay(false); 
     } else if (event.data === YouTube.PlayerState.ENDED) {
       setIsPlaying(false);
-      setShowEndScreen(true); // Show end screen when ended
-      setShowControls(false); // Hide controls on end screen
-      setShowOverlay(false); // Hide click overlay on end screen
+      setShowEndScreen(true); 
+      setShowControls(false); 
+      setShowOverlay(false); 
     }
   };
 
-  // Effect to update current time and duration
+  
   useEffect(() => {
     let intervalId;
     if (isPlaying && playerRef.current) {
       intervalId = setInterval(() => {
         setCurrentTime(playerRef.current.getCurrentTime());
-        setDuration(playerRef.current.getDuration()); // Update duration in case it changes
-      }, 100); // Update every 100ms
+        setDuration(playerRef.current.getDuration()); 
+      }, 100); 
     } else {
       clearInterval(intervalId);
     }
@@ -195,7 +191,7 @@ const YouTubePlayer = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [isPlaying]); // Re-run effect when isPlaying changes
+  }, [isPlaying]); 
 
   const togglePlayPause = () => {
     if (playerRef.current) {
@@ -217,9 +213,9 @@ const YouTubePlayer = () => {
 
   const handleReplay = () => {
     if (playerRef.current) {
-      playerRef.current.seekTo(0, true); // Seek to the beginning
-      playerRef.current.playVideo(); // Play the video
-      setShowEndScreen(false); // Hide the end screen
+      playerRef.current.seekTo(0, true); 
+      playerRef.current.playVideo(); 
+      setShowEndScreen(false); 
     }
   };
 
@@ -228,7 +224,7 @@ const YouTubePlayer = () => {
     if (!container) return;
 
     if (!document.fullscreenElement) {
-      // Enter fullscreen
+      
       if (container.requestFullscreen) {
         container.requestFullscreen();
       } else if (container.mozRequestFullScreen) { /* Firefox */
@@ -239,7 +235,7 @@ const YouTubePlayer = () => {
         container.msRequestFullscreen();
       }
     } else {
-      // Exit fullscreen
+      
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) { /* Firefox */
@@ -269,7 +265,7 @@ const YouTubePlayer = () => {
     setVolume(newVolume);
     if (playerRef.current) {
       playerRef.current.setVolume(newVolume);
-      // If volume is changed, ensure it's not muted unless volume is 0
+      
       if (newVolume > 0 && isMuted) {
         setIsMuted(false);
         playerRef.current.unMute();
@@ -277,15 +273,15 @@ const YouTubePlayer = () => {
     }
   };
 
-  // Handle mute toggle
+  // mute toggle
   const toggleMute = () => {
     if (playerRef.current) {
       if (isMuted) {
         playerRef.current.unMute();
         setIsMuted(false);
-        // Restore volume to previous level if it was muted at 0
+        
         if (volume === 0) {
-           setVolume(50); // Restore to a default level like 50
+           setVolume(50); 
            playerRef.current.setVolume(50);
         }
       } else {
@@ -295,7 +291,7 @@ const YouTubePlayer = () => {
     }
   };
 
-  // Format time in HH:MM:SS or MM:SS format
+ 
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds) || timeInSeconds < 0) return '00:00';
     const hours = Math.floor(timeInSeconds / 3600);
@@ -313,7 +309,7 @@ const YouTubePlayer = () => {
     }
   };
 
-  // Render the player and controls
+  
   return (
     <div className={`youtube-player-container ${isFullScreen ? 'fullscreen-active' : ''}`} ref={containerRef}>
       {showDevToolsMessage ? (
@@ -329,11 +325,11 @@ const YouTubePlayer = () => {
               height: '390',
               width: '640',
               playerVars: {
-                // https://developers.google.com/youtube/player_parameters
+                
                 autoplay: 1,
-                controls: 0, // Disable default controls
-                modestbranding: 1, // Hide YouTube logo
-                rel: 0, // Do not show related videos
+                controls: 0, // Dissable default controls
+                modestbranding: 1, // Hide Youube logo
+                rel: 0, // do not show related videos
               },
             }}
             onReady={onPlayerReady}
@@ -412,8 +408,8 @@ const YouTubePlayer = () => {
                  position: 'absolute',
                  top: '10px',
                  right: '10px',
-                 zIndex: 10001, // Ensure it's above the video
-                 backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+                 zIndex: 10001, // above the video
+                 backgroundColor: 'rgba(0, 0, 0, 0.5)', 
                  color: 'white',
                  border: 'none',
                  borderRadius: '5px',
