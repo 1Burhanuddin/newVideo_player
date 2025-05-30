@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'; // Assuming react-router-dom is used fo
 
 const videos = [
   { id: 'dqFY2ijqM-4', title: 'Video 1 Title', thumbnailUrl: 'https://img.youtube.com/vi/dqFY2ijqM-4/hqdefault.jpg' },
-  { id: 'XHzoK6BJK8Q', title: 'Video 2 Title', thumbnailUrl: 'https://img.youtube.com/vi/XHzoK6BJK8Q/hqdefault.jpg' },
+  { id: 'VjfeI_8Y-Z1_MjuD', title: 'Video 2 Title', thumbnailUrl: 'https://img.youtube.com/vi/XHzoK6BJK8Q/hqdefault.jpg' },
   { id: 'cRugC_qCet0', title: 'New Video Title', thumbnailUrl: 'https://img.youtube.com/vi/cRugC_qCet0/hqdefault.jpg' },
   // Add more video objects here
 ];
